@@ -72,6 +72,7 @@ public class FarmController {
   /**
    * comment.
    */
+
   @PostMapping("/{farmId}/crops")
   public ResponseEntity<CropDto> insertCrop(@PathVariable Long farmId,
       @RequestBody CropDto cropDto) {
@@ -83,5 +84,20 @@ public class FarmController {
       return ResponseEntity.status(HttpStatus.CREATED).body(CropDto.fromEntity(newCrop));
     }
     throw new NotFoundException("Fazenda não encontrada!");
+  }
+
+  /**
+   * comment.
+   */
+
+  @GetMapping("/{farmId}/crops")
+  public ResponseEntity<List<CropDto>> getAllCrops(@PathVariable Long farmId) {
+    Optional<Farm> optionalFarm = farmService.getFarmById(farmId);
+    List<Crop> allCrops = cropService.getCropsByFarmId(farmId);
+    List<CropDto> response = allCrops.stream().map(CropDto::fromEntity).toList();
+    if (optionalFarm.isEmpty()) {
+      throw new NotFoundException("Fazenda não encontrada!");
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }
